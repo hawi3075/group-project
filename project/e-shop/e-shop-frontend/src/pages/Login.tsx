@@ -1,45 +1,76 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EyeOff, Eye, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api/axios'; 
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  
-  // 1. Form States
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // 2. Submit Handler
+  // SAFETY CHECK: Fixes the "undefined" JSON error seen in your console
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr && userStr !== "undefined") {
+      try {
+        const user = JSON.parse(userStr);
+        // Redirect if already logged in
+        navigate(user.role === 'admin' ? '/admin/overview' : '/products');
+      } catch (e) {
+        localStorage.removeItem('user'); // Clear bad data
+      }
+    }
+  }, [navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      // Replace URL with your friend's API endpoint (e.g., http://localhost:5000/api/login)
-      const response = await axios.post('/api/auth/login', {
-        email,
-        password
-      });
+      // Sending credentials to the backend
+      const response = await API.post('/auth/login', { email, password });
+      
+      // Matches the Swagger Response: response.data.data
+      const authData = response.data.data; 
 
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        navigate('/products'); // Redirect on success
+      if (authData && authData.accessToken) {
+        // Saving the correct keys from your Swagger UI
+        localStorage.setItem('token', authData.accessToken);
+        localStorage.setItem('user', JSON.stringify({
+          id: authData.id,
+          email: authData.email,
+          role: authData.role
+        }));
+        
+        // Success feedback
+        alert("Login Successful!");
+        
+        // Redirecting to your existing products page
+        if (authData.role === 'admin') {
+          navigate('/admin/overview');
+        } else {
+          navigate('/products'); 
+        }
+      } else {
+        setError("Invalid response format from server.");
       }
     } catch (err: any) {
+      // Handles the 401 Unauthorized error in your console
+      console.error("Login Error:", err.response?.data);
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
+      // Stops the loading spinner so the page isn't stuck
       setLoading(false);
     }
   };
 
   return (
     <div className="w-full min-h-[80vh] bg-[#F9F9F9] flex flex-col items-center justify-center py-10 font-sans">
-      <div className="bg-white w-full max-w-[420px] p-10 rounded-2xl shadow-sm border border-zinc-100 flex flex-col items-center z-10">
+      <div className="bg-white w-full max-w-[420px] p-10 rounded-2xl shadow-sm border border-zinc-100 flex flex-col items-center">
         
         <div className="text-red-600 mb-6">
           <svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor">
@@ -47,54 +78,43 @@ const Login = () => {
           </svg>
         </div>
         
-        <h1 className="text-3xl font-[900] text-black mb-10 tracking-tight text-center">
+        <h1 className="text-3xl font-[900] text-black mb-10 text-center tracking-tight">
           Login to Efoy Gebya
         </h1>
 
-        {/* 3. Error Message Display */}
+        {/* ERROR MESSAGE DISPLAY */}
         {error && (
-          <div className="w-full mb-6 p-3 bg-red-50 text-red-600 text-[10px] font-bold uppercase tracking-widest rounded-lg text-center">
+          <div className="w-full mb-6 p-3 bg-red-50 text-red-600 text-[10px] font-bold uppercase tracking-widest rounded-lg text-center border border-red-100">
             {error}
           </div>
         )}
         
         <form className="w-full space-y-6" onSubmit={handleLogin}>
           <div className="space-y-2">
-            <label className="text-[10px] font-[800] uppercase tracking-[0.15em] text-black ml-1">
-              Email Address
-            </label>
+            <label className="text-[10px] font-[800] uppercase tracking-[0.15em] text-black ml-1">Email Address</label>
             <input 
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@domain.com" 
-              className="w-full bg-[#E8F0FE] border-none h-12 px-4 rounded-xl text-sm font-medium placeholder:text-zinc-400 focus:ring-2 focus:ring-zinc-200 text-black transition-all"
+              type="email" 
+              required 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              className="w-full bg-[#E8F0FE] border-none h-12 px-4 rounded-xl text-sm font-medium text-black" 
             />
           </div>
 
           <div className="space-y-2">
-            <div className="flex justify-between items-center px-1">
-              <label className="text-[10px] font-[800] uppercase tracking-[0.15em] text-black">
-                Password
-              </label>
-              <button type="button" className="text-[9px] font-black uppercase text-red-600 hover:underline tracking-tighter">
-                Forgot?
-              </button>
-            </div>
+            <label className="text-[10px] font-[800] uppercase tracking-[0.15em] text-black ml-1">Password</label>
             <div className="relative">
               <input 
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••" 
-                className="w-full bg-[#E8F0FE] border-none h-12 px-4 rounded-xl text-sm font-medium placeholder:text-zinc-400 pr-10 focus:ring-2 focus:ring-zinc-200 text-black transition-all"
+                type={showPassword ? "text" : "password"} 
+                required 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                className="w-full bg-[#E8F0FE] border-none h-12 px-4 rounded-xl text-sm font-medium pr-10 text-black" 
               />
               <button 
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black transition-colors"
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)} 
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400"
               >
                 {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
               </button>
@@ -102,35 +122,15 @@ const Login = () => {
           </div>
 
           <button 
-            type="submit"
-            disabled={loading}
-            className="w-full bg-zinc-900 hover:bg-black text-white font-[800] uppercase tracking-[0.2em] text-[11px] h-14 rounded-xl mt-4 transition-all shadow-md active:scale-[0.98] flex items-center justify-center"
+            type="submit" 
+            disabled={loading} 
+            className="w-full bg-zinc-900 hover:bg-black text-white font-[800] uppercase tracking-[0.2em] text-[11px] h-14 rounded-xl mt-4 flex items-center justify-center transition-colors"
           >
             {loading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Login'}
           </button>
         </form>
 
-        <div className="w-full flex items-center my-8">
-          <div className="flex-1 border-t border-zinc-100"></div>
-          <span className="px-4 text-[9px] font-bold text-zinc-400 uppercase tracking-widest whitespace-nowrap">
-            Or continue with
-          </span>
-          <div className="flex-1 border-t border-zinc-100"></div>
-        </div>
-
-        <button type="button" className="w-full border border-zinc-200 bg-white hover:bg-zinc-50 flex items-center justify-center gap-3 h-12 rounded-xl transition-all text-[11px] font-bold text-black shadow-sm">
-          <img 
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-            alt="Google Logo" 
-            className="w-5 h-5" 
-          />
-          Sign in with Google
-        </button>
-
-        <Link 
-          to="/register" 
-          className="mt-10 text-[10px] font-[900] uppercase tracking-widest text-red-600 hover:underline transition-all"
-        >
+        <Link to="/register" className="mt-10 text-[10px] font-[900] uppercase tracking-widest text-red-600 hover:underline">
           Don't have an account? Sign Up
         </Link>
       </div>
