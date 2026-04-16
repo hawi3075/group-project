@@ -1,14 +1,29 @@
-import { ArrowRight, Star, ChevronRight, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Star, ChevronRight, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import { PRODUCTS, CATEGORIES } from '@/lib/mock-data';
 
 const Home = () => {
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const handleSeeAll = (path: string = '/products') => {
     navigate(path);
   };
+
+  // --- CATEGORY FILTERING & RENAMING LOGIC ---
+  const displayCategories = CATEGORIES
+    .filter(cat => {
+      const name = cat.name.toLowerCase();
+      // Remove unwanted categories
+      return name !== 'toys' && name !== 'video games';
+    })
+    .map(cat => {
+      const name = cat.name.toLowerCase();
+      // Rename categories as requested
+      if (name === 'computer') return { ...cat, name: 'Electronics' };
+      if (name === 'apparel') return { ...cat, name: 'Cloth' };
+      return cat;
+    });
 
   return (
     <div className="flex flex-col gap-20 pb-0 bg-white font-sans">
@@ -61,12 +76,16 @@ const Home = () => {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {PRODUCTS.slice(0, 5).map((item) => (
-            <ProductCard key={item.id} product={item} />
+            <ProductCard 
+              key={item.id} 
+              product={item} 
+              onClick={() => navigate(`/product/${item.id}`)} 
+            />
           ))}
         </div>
       </section>
 
-      {/* --- CATEGORIES SECTION --- */}
+      {/* --- MAXIMIZED CATEGORIES SECTION --- */}
       <section className="container mx-auto px-8">
         <div className="flex justify-between items-center mb-10">
           <h2 className="text-3xl font-black uppercase tracking-tighter">Shop by Category</h2>
@@ -77,56 +96,64 @@ const Home = () => {
             See All
           </button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
-          {CATEGORIES.map((cat) => (
+        {/* Changed to 4 columns to maximize image size as requested */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {displayCategories.map((cat) => (
             <div 
               key={cat.name} 
               onClick={() => handleSeeAll(`/products?category=${cat.name.toLowerCase()}`)}
               className="group cursor-pointer text-center"
             >
-              <div className="aspect-[3/4] bg-zinc-50 overflow-hidden mb-4 border border-zinc-100">
-                <img src={cat.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={cat.name} />
+              <div className="aspect-[4/5] bg-zinc-50 overflow-hidden mb-4 border border-zinc-100">
+                <img 
+                  src={cat.image} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                  alt={cat.name} 
+                />
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em]">{cat.name}</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.3em]">{cat.name}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* --- EXTRA PRODUCT ROWS --- */}
-      <ProductRowSection title="Last Viewed" data={PRODUCTS.slice(5, 10)} onSeeAll={() => handleSeeAll()} />
-      <ProductRowSection title="Top Sellers" data={PRODUCTS.slice(0, 5)} onSeeAll={() => handleSeeAll()} />
+      {/* --- ADDITIONAL SECTIONS --- */}
+      <ProductRowSection title="Last Viewed" data={PRODUCTS.slice(5, 10)} />
+      <ProductRowSection title="Top Sellers" data={PRODUCTS.slice(0, 5)} />
 
-      {/* --- COMFY STYLE BANNERS --- */}
+      {/* --- STYLE BANNERS --- */}
       <section className="container mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-10 mb-24">
         <ComfyBanner 
           title="Comfy style for her.✨" 
           description="Shop from efoy gebya fashion including shoes, clothes, handbags and much more😊"
           img="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop"
-          onExplore={() => handleSeeAll('/products?category=apparel')}
+          onExplore={() => handleSeeAll('/products?category=cloth')}
         />
         <ComfyBanner 
           title="Comfy style for him.✨" 
           description="Shop from efoy gebya fashion including shoes, clothes, handbags and much more😊"
           img="https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=1000&auto=format&fit=crop"
-          onExplore={() => handleSeeAll('/products?category=apparel')}
+          onExplore={() => handleSeeAll('/products?category=cloth')}
         />
       </section>
     </div>
   );
 };
 
-// --- UPDATED HELPER COMPONENTS ---
+// --- HELPER COMPONENTS ---
 
-const ProductCard = ({ product }: { product: any }) => (
-  <div className="group cursor-pointer">
+const ProductCard = ({ product, onClick }: { product: any, onClick: () => void }) => (
+  <div className="group cursor-pointer" onClick={onClick}>
     <div className="aspect-[3/4] overflow-hidden bg-[#FBFBFB] mb-5 relative border border-zinc-50 p-4 flex items-center justify-center">
       <Star className="absolute top-4 right-4 h-3.5 w-3.5 fill-black text-black" />
+      
+      {/* Detail Icon (Maximize2) instead of Cart */}
       <div className="absolute bottom-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
         <button className="bg-black text-white p-3 rounded-none shadow-2xl hover:bg-zinc-800 transition-colors">
-          <ShoppingBag size={16} />
+          <Maximize2 size={16} />
         </button>
       </div>
+      
       <img src={product.image} className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-700" alt={product.name} />
     </div>
     <div className="space-y-2 px-1">
@@ -160,23 +187,30 @@ const ComfyBanner = ({ title, description, img, onExplore }: { title: string, de
   </div>
 );
 
-const ProductRowSection = ({ title, data, onSeeAll }: { title: string, data: any[], onSeeAll: () => void }) => (
-  <section className="container mx-auto px-8">
-    <div className="flex justify-between items-end mb-12">
-      <h2 className="text-3xl font-black uppercase tracking-tighter">{title}</h2>
-      <button 
-        onClick={onSeeAll}
-        className="text-[10px] uppercase border-b border-black pb-1 font-black tracking-[0.2em] cursor-pointer"
-      >
-        Shop All
-      </button>
-    </div>
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-      {data.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  </section>
-);
+const ProductRowSection = ({ title, data }: { title: string, data: any[] }) => {
+  const navigate = useNavigate();
+  return (
+    <section className="container mx-auto px-8">
+      <div className="flex justify-between items-end mb-12">
+        <h2 className="text-3xl font-black uppercase tracking-tighter">{title}</h2>
+        <button 
+          onClick={() => navigate('/products')}
+          className="text-[10px] uppercase border-b border-black pb-1 font-black tracking-[0.2em] cursor-pointer"
+        >
+          Shop All
+        </button>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+        {data.map((product) => (
+          <ProductCard 
+            key={product.id} 
+            product={product} 
+            onClick={() => navigate(`/product/${product.id}`)} 
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
 
 export default Home;
