@@ -1,6 +1,9 @@
-import { ShieldCheck, Zap, Check } from 'lucide-react'; // Removed 'Globe' to fix the error
+import { useNavigate } from 'react-router-dom'; // Added for navigation
+import { ShieldCheck, Zap, Check, ArrowLeft } from 'lucide-react'; // Added ArrowLeft
 
 const About = () => {
+  const navigate = useNavigate(); // Initialize navigation
+
   return (
     <div className="w-full bg-white font-sans text-black">
       {/* Hero Section */}
@@ -10,6 +13,15 @@ const About = () => {
           alt="Luxury Retail" 
           className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105"
         />
+
+        {/* BACK ICON - TOP LEFT SIDE */}
+        <button 
+          onClick={() => navigate(-1)} 
+          className="absolute top-8 left-8 z-30 bg-white/10 backdrop-blur-md text-white p-3 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-300 group"
+        >
+          <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
+        </button>
+
         <div className="relative z-10 text-center px-6">
           <h1 className="text-5xl md:text-7xl font-[900] text-white tracking-tighter mb-4 uppercase">
             Efoy Gebya
@@ -89,7 +101,6 @@ const About = () => {
               and design over noise."
             </blockquote>
             <div className="flex items-center gap-4">
-              {/* Updated Profile Image: Female Professional */}
               <div className="w-12 h-12 bg-zinc-100 rounded-full overflow-hidden grayscale border border-zinc-200 shadow-sm">
                 <img 
                   src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200" 
