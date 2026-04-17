@@ -9,6 +9,7 @@ interface SidebarProps {
 const ProductSidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(true);
 
+  // Updated categories list: Furniture removed, Fashion/Accessories added
   const categories = [
     { name: 'All Products' },
     { name: 'Clothing', hasSub: true },
@@ -16,7 +17,8 @@ const ProductSidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
     { name: 'Home Materials' },
     { name: 'Beauty' },
     { name: 'Electronics' },
-    { name: 'Furniture' }
+    { name: 'Fashion' },
+    { name: 'Accessories' }
   ];
 
   return (
@@ -89,7 +91,7 @@ const ProductSidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
           </p>
         </div>
 
-        {/* Top Seller Navigation (Button Removed) */}
+        {/* Top Seller Navigation */}
         <div 
           onClick={() => onCategoryChange('Top Seller')}
           className={`pt-8 border-t border-zinc-50 cursor-pointer group transition-all ${
