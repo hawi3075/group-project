@@ -4,7 +4,6 @@ import { OverviewPage } from "./components/overview"
 import { ProductsPage } from "./components/ProductPage"
 import { OrdersPage } from "./components/OrdersPage"
 import { ProfilePage } from "./components/ProfilePage"
-// Import your other page components
 
 export default function App() {
   const [activeItem, setActiveItem] = useState("overview")
@@ -30,10 +29,7 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-[#0f1419]">
-      <Sidebar
-        activeItem={activeItem}
-        onItemClick={setActiveItem}
-      />
+      <Sidebar activeItem={activeItem} onItemClick={setActiveItem} />
       <main className="ml-64 flex-1">
         {renderPage()}
       </main>

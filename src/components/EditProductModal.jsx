@@ -14,7 +14,7 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
   const [imagePreview, setImagePreview] = useState(null)
   const fileInputRef = useRef(null)
 
-  // Populate form when product changes
+  
   useEffect(() => {
     if (product) {
       setFormData({
@@ -79,12 +79,12 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
+   
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
-      {/* Modal */}
+    
       <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
-        {/* Header */}
+     
         <div className="mb-6 flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-black tracking-tight text-zinc-900">
@@ -103,7 +103,7 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Image Upload */}
+    
           <input
             type="file"
             ref={fileInputRef}
@@ -131,7 +131,6 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
             )}
           </div>
 
-          {/* Form Grid */}
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-400">
