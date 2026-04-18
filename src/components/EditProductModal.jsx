@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react"
 import { X, Upload } from "lucide-react"
 
+const AVAILABLE_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"]
+
 export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     name: "",
     classification: "",
     color: "",
+    sizes: [],
     stock: 0,
     price: 0,
     specs: "",
@@ -14,13 +17,13 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
   const [imagePreview, setImagePreview] = useState(null)
   const fileInputRef = useRef(null)
 
-  
   useEffect(() => {
     if (product) {
       setFormData({
         name: product.name || "",
         classification: product.classification || "",
         color: product.color || "",
+        sizes: product.sizes || [],
         stock: product.stock || 0,
         price: product.price || 0,
         specs: product.specs || "",
@@ -37,6 +40,15 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
     setFormData((prev) => ({
       ...prev,
       [name]: name === "stock" || name === "price" ? Number(value) : value,
+    }))
+  }
+
+  const handleSizeToggle = (size) => {
+    setFormData((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(size)
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size],
     }))
   }
 
@@ -79,12 +91,9 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-   
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
-    
       <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
-     
         <div className="mb-6 flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-black tracking-tight text-zinc-900">
@@ -103,7 +112,6 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-    
           <input
             type="file"
             ref={fileInputRef}
@@ -173,6 +181,33 @@ export function EditProductModal({ product, isOpen, onClose, onSubmit }) {
               placeholder="e.g., Midnight Black, Pearl White"
               className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400"
             />
+          </div>
+
+          <div className="mt-4">
+            <label className="mb-2 block text-xs font-medium tracking-wide text-zinc-400">
+              AVAILABLE SIZES
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {AVAILABLE_SIZES.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => handleSizeToggle(size)}
+                  className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                    formData.sizes.includes(size)
+                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                      : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-400"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+            {formData.sizes.length > 0 && (
+              <p className="mt-2 text-xs text-zinc-500">
+                Selected: {formData.sizes.join(", ")}
+              </p>
+            )}
           </div>
 
           <div className="mt-4 grid gap-4 md:grid-cols-2">

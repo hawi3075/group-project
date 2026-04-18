@@ -174,7 +174,6 @@ export function ProductsPage() {
             <p className="text-xs font-medium tracking-widest text-zinc-400">
               SYSTEM LOAD
             </p>
-            <p className="mt-2 text-3xl font-bold text-white">Nominal</p>
           </div>
         </div>
       </main>

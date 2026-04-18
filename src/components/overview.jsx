@@ -12,7 +12,7 @@ export function OverviewPage() {
   return (
     <main className="flex-1 p-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-black tracking-tight text-zinc-100">
+        <h1 className="text-4xl font-black tracking-tight text-zinc-900">
           TERMINAL OVERVIEW
         </h1>
         <p className="mt-1 text-xs tracking-widest text-zinc-400">

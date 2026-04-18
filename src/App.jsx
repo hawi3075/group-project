@@ -28,7 +28,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#0f1419]">
+   <div className="flex min-h-screen bg-white">
       <Sidebar activeItem={activeItem} onItemClick={setActiveItem} />
       <main className="ml-64 flex-1">
         {renderPage()}

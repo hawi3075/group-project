@@ -1,11 +1,14 @@
 import { useState, useRef } from "react"
 import { X, Upload } from "lucide-react"
 
+const AVAILABLE_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"]
+
 export function NewProductModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     name: "",
     classification: "",
     color: "",
+    sizes: [],
     stock: 0,
     price: 0,
     specs: "",
@@ -24,6 +27,15 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
     }))
   }
 
+  const handleSizeToggle = (size) => {
+    setFormData((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(size)
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size],
+    }))
+  }
+
   const handleImageClick = () => {
     fileInputRef.current?.click()
   }
@@ -31,17 +43,11 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
   const handleImageChange = (e) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Create a preview URL for the selected image
       const previewUrl = URL.createObjectURL(file)
       setImagePreview(previewUrl)
-      
-      // Store the file or convert to base64 for submission
       const reader = new FileReader()
       reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          image: reader.result,
-        }))
+        setFormData((prev) => ({ ...prev, image: reader.result }))
       }
       reader.readAsDataURL(file)
     }
@@ -51,13 +57,15 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
     e.preventDefault()
     onSubmit({
       ...formData,
-      image: formData.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
+      image:
+        formData.image ||
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
     })
-    // Reset form
     setFormData({
       name: "",
       classification: "",
       color: "",
+      sizes: [],
       stock: 0,
       price: 0,
       specs: "",
@@ -68,7 +76,6 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
   }
 
   const handleClose = () => {
-    // Clean up preview URL to prevent memory leaks
     if (imagePreview) {
       URL.revokeObjectURL(imagePreview)
     }
@@ -77,6 +84,7 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
       name: "",
       classification: "",
       color: "",
+      sizes: [],
       stock: 0,
       price: 0,
       specs: "",
@@ -87,18 +95,14 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-
-      {/* Modal */}
       <div className="relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
-        {/* Header */}
         <div className="mb-6 flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-black tracking-tight text-zinc-900">
               NEW PRODUCT
             </h2>
-            <p className="text-xs tracking-widest text-zinc-400">
+            <p className="text-xs tracking-widest text-zinc-500">
               INVENTORY MANAGEMENT PROTOCOL
             </p>
           </div>
@@ -111,7 +115,6 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Image Upload */}
           <input
             type="file"
             ref={fileInputRef}
@@ -119,9 +122,10 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
             accept="image/*"
             className="hidden"
           />
+
           <div
             onClick={handleImageClick}
-            className="mb-6 flex h-32 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50 transition-colors hover:border-zinc-400 overflow-hidden"
+            className="mb-6 flex h-32 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50 transition-colors hover:border-zinc-400 overflow-hidden"
           >
             {imagePreview ? (
               <img
@@ -132,17 +136,16 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
             ) : (
               <>
                 <Upload className="h-6 w-6 text-zinc-400" />
-                <p className="mt-2 text-xs font-medium tracking-wide text-zinc-400">
+                <p className="mt-2 text-xs font-medium tracking-wide text-zinc-500">
                   SELECT VISUAL ASSET
                 </p>
               </>
             )}
           </div>
 
-          {/* Form Grid */}
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-400">
+              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-500">
                 PRODUCT NAME
               </label>
               <input
@@ -151,12 +154,12 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Item name"
-                className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400"
+                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-500"
                 required
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-400">
+              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-500">
                 CLASSIFICATION
               </label>
               <input
@@ -165,13 +168,13 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
                 value={formData.classification}
                 onChange={handleChange}
                 placeholder="Electronics..."
-                className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400"
+                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-500"
               />
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-400">
+            <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-500">
               PRODUCT COLOR
             </label>
             <input
@@ -180,13 +183,40 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
               value={formData.color}
               onChange={handleChange}
               placeholder="e.g., Midnight Black, Pearl White"
-              className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400"
+              className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-500"
             />
+          </div>
+
+          <div className="mt-4">
+            <label className="mb-2 block text-xs font-medium tracking-wide text-zinc-500">
+              AVAILABLE SIZES
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {AVAILABLE_SIZES.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => handleSizeToggle(size)}
+                  className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                    formData.sizes.includes(size)
+                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                      : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-400"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+            {formData.sizes.length > 0 && (
+              <p className="mt-2 text-xs text-zinc-500">
+                Selected: {formData.sizes.join(", ")}
+              </p>
+            )}
           </div>
 
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-400">
+              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-500">
                 INVENTORY LEVEL
               </label>
               <input
@@ -195,11 +225,11 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
                 value={formData.stock}
                 onChange={handleChange}
                 placeholder="0"
-                className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400"
+                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-500"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-400">
+              <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-500">
                 UNIT PRICE ($)
               </label>
               <input
@@ -209,13 +239,13 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
                 onChange={handleChange}
                 placeholder="0.00"
                 step="0.01"
-                className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400"
+                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-500"
               />
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-400">
+            <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-500">
               TECHNICAL SPECS
             </label>
             <textarea
@@ -224,7 +254,7 @@ export function NewProductModal({ isOpen, onClose, onSubmit }) {
               onChange={handleChange}
               placeholder="Enter product details..."
               rows={3}
-              className="w-full resize-none rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-400"
+              className="w-full resize-none rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-zinc-500"
             />
           </div>
 
