@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile'; 
+import AdminLayout from './components/AdminLayout';
 
 import './App.css';
 
@@ -40,8 +41,9 @@ const AppContent = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/profile" element={<Profile />} /> 
+          <Route path="/profile" element={<Profile />} />
           
+          <Route path="/admin" element={<AdminLayout />} />
           
         </Routes>
       </main>
