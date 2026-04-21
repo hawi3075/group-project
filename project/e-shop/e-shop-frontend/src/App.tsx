@@ -10,8 +10,7 @@ import Register from './pages/Register';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile'; 
 import AdminLayout from './components/AdminLayout';
-
-// ✅ FIX: Use named imports { } for all admin pages
+import ProtectedRoute from './components/ProtectedRoute';
 import { OverviewPage } from './components/admin/overview';
 import { ProductsPage } from './components/admin/ProductPage';
 import { OrdersPage } from './components/admin/OrdersPage';
@@ -42,7 +41,14 @@ const AppContent = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
-          
+          <Route 
+        path="/admin/*" 
+         element={
+        <ProtectedRoute requireAdmin={true}>
+         <AdminLayout />
+         </ProtectedRoute>
+         } 
+           ></Route>
           <Route path="/admin/*" element={<AdminLayout />}>
             <Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<OverviewPage />} />
