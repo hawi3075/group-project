@@ -192,11 +192,7 @@ export function ProductsPage() {
               ${totalValue.toLocaleString()}
             </p>
           </div>
-          <div className="rounded-xl bg-zinc-900 p-6">
-            <p className="text-xs font-medium tracking-widest text-zinc-400">
-              SYSTEM LOAD
-            </p>
-          </div>
+         
         </div>
       </main>
 
