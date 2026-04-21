@@ -1,4 +1,4 @@
-import { LayoutGrid, Package, ShoppingCart, Users, BarChart3, type LucideIcon } from "lucide-react"
+import { LayoutGrid, Package, ShoppingCart, Users, BarChart3, User, type LucideIcon } from "lucide-react"
 
 // Define the type for navigation items
 type NavItem = {
@@ -52,18 +52,21 @@ export function Sidebar({ activeItem, onItemClick }: SidebarProps) {
           onClick={() => onItemClick("profile")}
           className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
             activeItem === "profile"
-              ? "bg-zinc-800"
-              : "hover:bg-zinc-800"
+              ? "bg-zinc-800 text-white"
+              : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
           }`}
         >
+          {/* ✅ Added User icon for consistency */}
+          <User className="h-5 w-5" />
+          
           <div className="h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-pink-400 to-purple-500">
             <div className="flex h-full w-full items-center justify-center text-sm font-bold text-white">
               SB
             </div>
           </div>
-          <div>
-            <p className="text-sm font-medium text-white">SIHAM BIRHANU</p>
-            <p className="text-xs text-zinc-400">SYSTEM ADMIN</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white truncate">SIHAM BIRHANU</p>
+            <p className="text-xs text-zinc-400 truncate">SYSTEM ADMIN</p>
           </div>
         </button>
       </div>
