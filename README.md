@@ -19,16 +19,16 @@ Responsive Design: Optimized for 4K desktops, tablets, and mobile devices
 Secure Authentication: Login and signup with real-time validation
 Performance Optimized: Fast builds and hot module replacement (HMR) using Vite
 🚀 Quick Start (Local Development)
-1. Installation
+Installation
 git clone https://github.com/hawi3075/efoy-gebya-frontend.git
 cd efoy-gebya-frontend
 npm install
-2. Environment Setup
+Environment Setup
 
 Create a .env file:
 
 VITE_API_URL=https://ecommerce-backend-1-87dk.onrender.com
-3. Run Development Server
+Run Development Server
 npm run dev
 ☁️ Deployment (Vercel)
 Environment Variables: Set VITE_API_URL in Vercel dashboard
