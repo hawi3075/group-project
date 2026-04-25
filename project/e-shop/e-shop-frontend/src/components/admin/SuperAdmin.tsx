@@ -13,7 +13,6 @@ import {
   X
 } from "lucide-react";
 
-// ✅ TypeScript Types
 type UserRole = "REGULAR" | "ADMIN" | "SUPER_ADMIN";
 type UserStatus = "ACTIVE" | "SUSPENDED" | "PENDING";
 
@@ -40,7 +39,6 @@ type FetchResponse = {
   page: number;
 };
 
-// ✅ Mock API (Replace with your real adminAPI)
 const adminAPI = {
   getUsers: async (query: string): Promise<FetchResponse> => {
     // Simulate API delay
