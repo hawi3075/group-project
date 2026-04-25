@@ -44,7 +44,7 @@ export function Sidebar({ activeItem, onItemClick, onBack }: SidebarProps) {
             <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-black text-lg">e</span>
             </div>
-            <span className="text-sm font-bold tracking-tight text-zinc-900">efoy-gebya</span>
+            <span className="text-sm font-bold tracking-tight text-zinc-900">Efoy-Gebeya</span>
           </div>
         </div>
         
@@ -86,7 +86,7 @@ export function Sidebar({ activeItem, onItemClick, onBack }: SidebarProps) {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-zinc-900 truncate">SIHAM BIRHANU</p>
+            <p className="text-sm font-medium text-zinc-700 truncate">SIHAM BIRHANU</p>
             <p className="text-xs text-zinc-500 truncate">SYSTEM ADMIN</p>
           </div>
         </button>
