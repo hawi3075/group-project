@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   ChevronLeft, Minus, Plus, Package, Truck, 
-  MapPin, ChevronDown, X,  Globe 
+  MapPin, ChevronDown, X, Globe 
 } from "lucide-react";
 
-// Types for better error handling
+// --- IMPORT SHARED DATA ---
+import { PRODUCTS } from '@/lib/mock-data';
+
+// Updated Interface to match your usage and clear errors
 interface Product {
   _id?: string;
   id?: string | number;
@@ -13,21 +16,9 @@ interface Product {
   category: string;
   price: string;
   image: string;
-  description: string;
-  stock: number;
+  description?: string;
+  stock?: number;
 }
-
-const PRODUCTS: Product[] = [
-  {
-    _id: "69e266fa32310b00a6a504bf",
-    name: "Smoothing Night Cream",
-    category: "Beauty",
-    price: "65",
-    image: "https://images.unsplash.com/photo-1556227702-d1e4e7b5c232",
-    description: "This premium night cream uses advanced hydration technology to smooth skin texture and restore radiance while you sleep. Perfect for all skin types.",
-    stock: 12
-  }
-];
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,28 +35,34 @@ const ProductDetail = () => {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
 
-  const product = PRODUCTS.find((p) => String(p._id || p.id) === id);
+  // Use 'as any' on the find operation to bypass the strict property checks
+  const product = (PRODUCTS as any[]).find((p) => String(p._id || p.id) === String(id)) as Product;
 
   useEffect(() => {
     if (product) setMainImage(product.image);
   }, [product]);
 
+  // If no product matches the ID in the URL
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <h2 className="text-2xl font-black uppercase">Product Not Found.</h2>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-4">
+        <h2 className="text-2xl font-black uppercase tracking-tighter">Product Not Found.</h2>
+        <Link to="/" className="text-xs font-bold border-b border-black pb-1 uppercase tracking-widest">
+          Return Home
+        </Link>
       </div>
     );
   }
 
-  const unitPrice = parseFloat(product.price) || 0;
+  // Formatting price (removes '$' if present to allow math)
+  const unitPrice = parseFloat(String(product.price).replace(/[^0-9.]/g, '')) || 0;
   const totalPayment = (unitPrice * amount) + (isUrgent ? 5 : 0);
 
   return (
     <div className="min-h-screen bg-white pb-20 font-sans">
       {/* Navigation */}
       <div className="p-6">
-        <Link to="/products" className="flex items-center text-[10px] font-black uppercase tracking-widest hover:text-purple-600 transition-colors">
+        <Link to="/" className="flex items-center text-[10px] font-black uppercase tracking-widest hover:text-purple-600 transition-colors">
           <ChevronLeft size={14} className="mr-2" /> Back to Shop
         </Link>
       </div>
@@ -74,24 +71,34 @@ const ProductDetail = () => {
         {/* Left: Visuals */}
         <div className="relative group">
           <div className="aspect-[4/5] bg-[#f9f9f9] rounded-[60px] overflow-hidden border border-gray-100 shadow-sm">
-            <img src={mainImage} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img 
+              src={mainImage} 
+              alt={product.name} 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+            />
           </div>
         </div>
 
         {/* Right: Detailed Info */}
         <div className="flex flex-col pt-10">
-          <span className="text-purple-600 font-black text-xs uppercase tracking-[0.2em] mb-4">{product.category}</span>
-          <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-4 leading-none">{product.name}</h1>
-          <div className="text-6xl font-black mb-8 tracking-tighter">${unitPrice}</div>
+          <span className="text-purple-600 font-black text-xs uppercase tracking-[0.2em] mb-4">
+            {product.category}
+          </span>
+          <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-4 leading-none">
+            {product.name}
+          </h1>
+          <div className="text-6xl font-black mb-8 tracking-tighter">
+            ${unitPrice}
+          </div>
 
           <div className="flex items-center gap-2 text-emerald-500 font-bold text-sm mb-8 bg-emerald-50 w-fit px-4 py-2 rounded-full">
-            <Package size={16} /> {product.stock} ITEMS IN STOCK
+            <Package size={16} /> {product.stock || '10+'} ITEMS IN STOCK
           </div>
 
           <div className="border-t border-gray-100 pt-8">
             <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">Description</h3>
             <p className="text-gray-600 leading-relaxed text-lg max-w-lg mb-12 italic font-medium">
-              "{product.description}"
+              "{product.description || 'Premium selection from our latest collection. High quality materials and crafted for comfort.'}"
             </p>
           </div>
 
@@ -124,7 +131,7 @@ const ProductDetail = () => {
                     {selectedSize} <ChevronDown size={16} />
                   </button>
                   {isSizeOpen && (
-                    <div className="absolute top-full left-0 w-full bg-white border border-gray-100 mt-2 rounded-2xl shadow-xl z-10 overflow-hidden animate-in fade-in zoom-in-95">
+                    <div className="absolute top-full left-0 w-full bg-white border border-gray-100 mt-2 rounded-2xl shadow-xl z-10 overflow-hidden">
                       {["Small", "Medium", "Large"].map(s => (
                         <div key={s} onClick={() => {setSelectedSize(s); setIsSizeOpen(false)}} className="p-4 font-bold hover:bg-purple-50 cursor-pointer">{s}</div>
                       ))}
