@@ -4,8 +4,6 @@ Welcome to the frontend repository for Efoy Gebya. This is a high-fidelity, luxu
 🔗 Live Links
 Frontend (Vercel): https://ecommerce-frontend-woad-theta.vercel.app/
 
-
-
 🛠️ Tech Stack
 Framework: React 18 (Vite)
 
@@ -61,5 +59,7 @@ The full project is now COMPLETED.
 Migrated from hardcoded localhost to dynamic Environment Variables.
 
 Resolved initial CORS and connectivity issues between Vercel and Render.
+
+Implemented a fully responsive Home page, Cart system, and Product Details with dynamic loading.
 
 Built with ❤️ for Efoy Gabeya.
