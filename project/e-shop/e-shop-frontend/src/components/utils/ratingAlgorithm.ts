@@ -1,4 +1,5 @@
-import { Rating, RatingStats, RatingValue } from '../types/rating';
+// src/components/utils/ratingAlgorithm.ts
+import type { Rating, RatingStats, RatingValue } from '../types/rating';
 
 /**
  * 🎯 Bayesian Average Rating Algorithm
@@ -38,7 +39,7 @@ export const calculateRatingStats = (ratings: Rating[]): RatingStats => {
     };
   }
 
-  const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as Record<RatingValue, number>;
+  const distribution: Record<RatingValue, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let sum = 0;
   let verifiedCount = 0;
 
@@ -74,15 +75,60 @@ export const getStarDisplay = (average: number): {
 /**
  * 🛡️ Anti-manipulation: Require verified purchase for "trusted" rating
  */
-export const getTrustedRating = (stats: RatingStats): number => {
-  // If < 3 verified reviews, fall back to Bayesian average
+export const getTrustedRating = (
+  stats: RatingStats, 
+  allRatings: Rating[],
+  globalAverage: number = 4.2,
+  minReviews: number = 5
+): number => {
+  // If < 3 verified reviews, fall back to Bayesian average using actual ratings
   if (stats.verifiedCount < 3) {
-    return calculateBayesianRating(
-      // You'd fetch these from your backend
-      [], 
-      stats.average, 
-      5
-    );
+    return calculateBayesianRating(allRatings, globalAverage, minReviews);
   }
   return stats.average;
+};
+
+/**
+ * 🔄 Helper: Sort ratings by newest/oldest/helpful
+ */
+export const sortRatings = (
+  ratings: Rating[], 
+  sortBy: 'newest' | 'oldest' | 'highest' | 'lowest' | 'verified'
+): Rating[] => {
+  const sorted = [...ratings];
+  
+  switch (sortBy) {
+    case 'newest':
+      return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    case 'oldest':
+      return sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    case 'highest':
+      return sorted.sort((a, b) => b.rating - a.rating);
+    case 'lowest':
+      return sorted.sort((a, b) => a.rating - b.rating);
+    case 'verified':
+      return sorted.sort((a, b) => (b.verified ? 1 : 0) - (a.verified ? 1 : 0));
+    default:
+      return sorted;
+  }
+};
+
+/**
+ * 📈 Get rating trend (improving/declining/stable)
+ */
+export const getRatingTrend = (ratings: Rating[], windowSize: number = 10): 'improving' | 'declining' | 'stable' => {
+  if (ratings.length < windowSize * 2) return 'stable';
+  
+  const sorted = [...ratings].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const recent = sorted.slice(0, windowSize);
+  const older = sorted.slice(windowSize, windowSize * 2);
+  
+  const recentAvg = recent.reduce((acc, r) => acc + r.rating, 0) / recent.length;
+  const olderAvg = older.reduce((acc, r) => acc + r.rating, 0) / older.length;
+  
+  const diff = recentAvg - olderAvg;
+  
+  if (diff >= 0.3) return 'improving';
+  if (diff <= -0.3) return 'declining';
+  return 'stable';
 };

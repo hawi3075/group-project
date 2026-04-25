@@ -1,3 +1,5 @@
+// ✅ Make sure this file exists and exports these types:
+
 export type RatingValue = 1 | 2 | 3 | 4 | 5;
 
 export interface Rating {
@@ -6,26 +8,24 @@ export interface Rating {
   productId: string;
   rating: RatingValue;
   comment?: string;
-  createdAt: string;
-  verified: boolean; // Was this from a verified purchase?
+  createdAt: string; // ISO date string
+  verified: boolean;
 }
 
 export interface RatingStats {
-  average: number;        // 0-5
-  count: number;          // Total ratings
-  distribution: {         // How many per star
+  average: number;
+  count: number;
+  distribution: {
     1: number;
     2: number;
     3: number;
     4: number;
     5: number;
   };
-  verifiedCount: number;  // Verified purchases only
+  verifiedCount: number;
 }
 
-export interface ProductWithRatings {
-  id: string;
-  name: string;
-  // ... other product fields
-  ratingStats: RatingStats;
-}
+// ✅ These are COMPONENTS, not types - keep them in separate files:
+// - RatingInput.tsx (the form component)
+// - RatingStars.tsx (the display component)  
+// - RatingSummary.tsx (the stats component)
