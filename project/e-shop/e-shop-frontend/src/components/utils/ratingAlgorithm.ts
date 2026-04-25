@@ -1,4 +1,3 @@
-// src/components/utils/ratingAlgorithm.ts
 import type { Rating, RatingStats, RatingValue } from '../types/rating';
 
 /**
