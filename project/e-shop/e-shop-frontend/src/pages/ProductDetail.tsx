@@ -1,243 +1,221 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { 
+  ChevronLeft, Minus, Plus, Package, Truck, 
+  MapPin, ChevronDown, X, Globe 
+} from "lucide-react";
+
+// --- IMPORT SHARED DATA ---
 import { PRODUCTS } from '@/lib/mock-data';
-import { Button } from '@/components/ui/button';
-// Box icon added back for inventory level
-import { ArrowLeft, ChevronDown, ChevronRight, X, Truck, MapPin, HelpCircle, Box } from 'lucide-react';
+
+// Updated Interface to match your usage and clear errors
+interface Product {
+  _id?: string;
+  id?: string | number;
+  name: string;
+  category: string;
+  price: string;
+  image: string;
+  description?: string;
+  stock?: number;
+}
 
 const ProductDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false); 
-  
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("Ethiopia");
-  const [isUrgent, setIsUrgent] = useState(false);
+  const { id } = useParams<{ id: string }>();
   const [amount, setAmount] = useState(1);
-  const [mainImage, setMainImage] = useState("");
-
+  const [selectedSize, setSelectedSize] = useState("Medium");
+  const [selectedColor, setSelectedColor] = useState("Original");
+  const [isUrgent, setIsUrgent] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isSizeOpen, setIsSizeOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
+  const [mainImage, setMainImage] = useState("");
+  
+  // Address State
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
 
-  const product = PRODUCTS.find((p) => p.id === Number(id));
+  // Use 'as any' on the find operation to bypass the strict property checks
+  const product = (PRODUCTS as any[]).find((p) => String(p._id || p.id) === String(id)) as Product;
 
-  // Inventory level data
-  const stockCount = 12; 
+  useEffect(() => {
+    if (product) setMainImage(product.image);
+  }, [product]);
 
-  if (product && !mainImage) setMainImage(product.image);
-  if (!product) return <div className="p-20 text-center font-black uppercase tracking-widest">Product not found.</div>;
+  // If no product matches the ID in the URL
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-4">
+        <h2 className="text-2xl font-black uppercase tracking-tighter">Product Not Found.</h2>
+        <Link to="/" className="text-xs font-bold border-b border-black pb-1 uppercase tracking-widest">
+          Return Home
+        </Link>
+      </div>
+    );
+  }
 
-  const availableSizes = ["S", "M", "L", "XL", "44"];
-  const availableColors = ["Standard Black", "Retro Red", "Ocean Blue"];
-  const countries = ["Ethiopia", "Kenya", "Djibouti", "Sudan", "Eritrea"];
-
-  const numericPrice = parseFloat(product.price.replace(/[^0-9.]/g, ''));
-  const urgentFee = isUrgent ? 5.00 : 0; 
-  const totalPrice = ((numericPrice * amount) + urgentFee).toFixed(2);
+  // Formatting price (removes '$' if present to allow math)
+  const unitPrice = parseFloat(String(product.price).replace(/[^0-9.]/g, '')) || 0;
+  const totalPayment = (unitPrice * amount) + (isUrgent ? 5 : 0);
 
   return (
-    <div className="container mx-auto px-8 py-16 min-h-screen bg-white">
-      {/* Back Button */}
-      <button 
-        onClick={() => navigate(-1)} 
-        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] mb-12 hover:opacity-50 transition-all"
-      >
-        <ArrowLeft size={14} /> Back
-      </button>
+    <div className="min-h-screen bg-white pb-20 font-sans">
+      {/* Navigation */}
+      <div className="p-6">
+        <Link to="/" className="flex items-center text-[10px] font-black uppercase tracking-widest hover:text-purple-600 transition-colors">
+          <ChevronLeft size={14} className="mr-2" /> Back to Shop
+        </Link>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-        
-        {/* LEFT: IMAGE GALLERY */}
-        <div className="space-y-6">
-          <div className="bg-[#FBFBFB] border border-zinc-100 p-12 flex items-center justify-center aspect-square overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16">
+        {/* Left: Visuals */}
+        <div className="relative group">
+          <div className="aspect-[4/5] bg-[#f9f9f9] rounded-[60px] overflow-hidden border border-gray-100 shadow-sm">
             <img 
               src={mainImage} 
               alt={product.name} 
-              className="max-h-full w-auto object-contain hover:scale-105 transition-transform duration-700" 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
             />
           </div>
         </div>
 
-        {/* RIGHT: PRODUCT INFO */}
-        <div className="flex flex-col space-y-10">
-          <div className="space-y-4">
-            <p className="text-red-600 text-[11px] font-black uppercase tracking-[0.4em]">{product.category}</p>
-            <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter leading-none">{product.name}</h1>
-            <p className="text-4xl font-black tracking-tighter text-black">{product.price}</p>
-            
-            {/* RESTORED INVENTORY LEVEL */}
-            <div className="flex items-center gap-2 text-green-600 pt-2">
-              <Box size={14} />
-              <span className="text-[10px] font-black uppercase tracking-widest">In Stock: {stockCount}</span>
-            </div>
+        {/* Right: Detailed Info */}
+        <div className="flex flex-col pt-10">
+          <span className="text-purple-600 font-black text-xs uppercase tracking-[0.2em] mb-4">
+            {product.category}
+          </span>
+          <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-4 leading-none">
+            {product.name}
+          </h1>
+          <div className="text-6xl font-black mb-8 tracking-tighter">
+            ${unitPrice}
           </div>
 
-          <div className="space-y-4 border-t border-zinc-100 pt-8">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Product Description</p>
-            <p className="text-sm leading-relaxed text-zinc-600 max-w-lg">
-              Experience the premium craftsmanship of the {product.name}. Curated for the Efoy Gebya collection, this item combines modern aesthetics with everyday functionality.
+          <div className="flex items-center gap-2 text-emerald-500 font-bold text-sm mb-8 bg-emerald-50 w-fit px-4 py-2 rounded-full">
+            <Package size={16} /> {product.stock || '10+'} ITEMS IN STOCK
+          </div>
+
+          <div className="border-t border-gray-100 pt-8">
+            <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">Description</h3>
+            <p className="text-gray-600 leading-relaxed text-lg max-w-lg mb-12 italic font-medium">
+              "{product.description || 'Premium selection from our latest collection. High quality materials and crafted for comfort.'}"
             </p>
           </div>
 
-          {/* STATIC INFO (Sizes & Colors) */}
-          <div className="grid grid-cols-2 gap-6 text-[11px] font-black uppercase tracking-widest border-y border-zinc-100 py-6">
-            <div>
-              <p className="text-zinc-400 mb-2">Sizes Available</p>
-              <div className="flex gap-2 flex-wrap">
-                {availableSizes.map(s => <span key={s} className="bg-zinc-100 px-3 py-1.5">{s}</span>)}
-              </div>
-            </div>
-            <div>
-              <p className="text-zinc-400 mb-2">Colors Available</p>
-              <div className="flex gap-2 flex-wrap">
-                {availableColors.map(c => <span key={c} className="bg-zinc-100 px-3 py-1.5">{c}</span>)}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 pt-6">
-            <Button 
-              onClick={() => setShowCheckout(true)} 
-              className="w-full bg-black text-white py-9 rounded-none text-[12px] font-black uppercase tracking-[0.4em] h-auto hover:bg-zinc-800 transition-all"
-            >
-              Buy Now
-            </Button>
-            <Button 
-              onClick={() => navigate('/cart')}
-              variant="outline"
-              className="w-full border-black text-black py-9 rounded-none text-[12px] font-black uppercase tracking-[0.4em] h-auto"
-            >
-              Add to Shopping Bag
-            </Button>
-          </div>
+          <button 
+            onClick={() => setIsCheckoutOpen(true)}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-8 rounded-[30px] transition-all transform active:scale-95 uppercase italic text-2xl shadow-2xl shadow-purple-200"
+          >
+            Buy Now
+          </button>
         </div>
       </div>
 
-      {/* MODAL: CHECKOUT */}
-      {showCheckout && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl relative my-auto animate-in zoom-in duration-300">
-            <button onClick={() => setShowCheckout(false)} className="absolute top-8 right-8 text-zinc-400 hover:text-black">
-              <X size={24} />
-            </button>
-            
-            <h2 className="text-2xl font-black uppercase text-center mb-8 tracking-tighter">Confirm Purchase</h2>
-            
-            <div className="space-y-5">
-              <div className="relative">
-                <button 
-                  onClick={() => {setIsSizeOpen(!isSizeOpen); setIsColorOpen(false);}} 
-                  className="w-full p-4 bg-zinc-50 border border-zinc-100 rounded-xl flex justify-between items-center text-[11px] font-black uppercase"
-                >
-                  {selectedSize || "Choose Size"}
-                  <ChevronDown size={14} className={isSizeOpen ? 'rotate-180 transition-all' : ''} />
-                </button>
-                {isSizeOpen && (
-                  <div className="absolute w-full mt-2 bg-white border z-[110] rounded-xl shadow-xl overflow-hidden">
-                    {availableSizes.map(s => (
-                      <div key={s} onClick={() => { setSelectedSize(s); setIsSizeOpen(false); }} className="p-3 hover:bg-zinc-100 cursor-pointer text-[10px] font-bold uppercase">{s}</div>
-                    ))}
+      {/* Checkout Side Panel */}
+      {isCheckoutOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsCheckoutOpen(false)} />
+          
+          <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl animate-in slide-in-from-right duration-500 flex flex-col">
+            <div className="p-8 flex justify-between items-center border-b">
+              <h2 className="font-black text-2xl uppercase italic tracking-tighter">Order Details</h2>
+              <button onClick={() => setIsCheckoutOpen(false)} className="p-3 hover:bg-gray-100 rounded-full transition-colors"><X size={24} /></button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-10">
+              {/* Selections */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="relative">
+                  <label className="text-[10px] font-black uppercase text-gray-400 mb-2 block">Size</label>
+                  <button onClick={() => setIsSizeOpen(!isSizeOpen)} className="w-full p-4 border-2 border-gray-100 rounded-2xl font-bold flex justify-between items-center hover:border-purple-200">
+                    {selectedSize} <ChevronDown size={16} />
+                  </button>
+                  {isSizeOpen && (
+                    <div className="absolute top-full left-0 w-full bg-white border border-gray-100 mt-2 rounded-2xl shadow-xl z-10 overflow-hidden">
+                      {["Small", "Medium", "Large"].map(s => (
+                        <div key={s} onClick={() => {setSelectedSize(s); setIsSizeOpen(false)}} className="p-4 font-bold hover:bg-purple-50 cursor-pointer">{s}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <label className="text-[10px] font-black uppercase text-gray-400 mb-2 block">Color</label>
+                  <button onClick={() => setIsColorOpen(!isColorOpen)} className="w-full p-4 border-2 border-gray-100 rounded-2xl font-bold flex justify-between items-center hover:border-purple-200">
+                    {selectedColor} <ChevronDown size={16} />
+                  </button>
+                  {isColorOpen && (
+                    <div className="absolute top-full left-0 w-full bg-white border border-gray-100 mt-2 rounded-2xl shadow-xl z-10 overflow-hidden">
+                      {["Original", "Midnight", "Rose"].map(c => (
+                        <div key={c} onClick={() => {setSelectedColor(c); setIsColorOpen(false)}} className="p-4 font-bold hover:bg-purple-50 cursor-pointer">{c}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Address Form */}
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Delivery Address</h3>
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <input 
+                      type="text" 
+                      placeholder="ENTER COUNTRY" 
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value.toUpperCase())}
+                      className="w-full p-5 pl-12 bg-gray-50 border-2 border-transparent focus:border-purple-600 rounded-2xl font-bold uppercase text-sm outline-none transition-all" 
+                    />
                   </div>
-                )}
-              </div>
-
-              <div className="relative">
-                <button 
-                  onClick={() => {setIsColorOpen(!isColorOpen); setIsSizeOpen(false);}} 
-                  className="w-full p-4 bg-zinc-50 border border-zinc-100 rounded-xl flex justify-between items-center text-[11px] font-black uppercase"
-                >
-                  {selectedColor || "Choose Color"}
-                  <ChevronDown size={14} className={isColorOpen ? 'rotate-180 transition-all' : ''} />
-                </button>
-                {isColorOpen && (
-                  <div className="absolute w-full mt-2 bg-white border z-[110] rounded-xl shadow-xl overflow-hidden">
-                    {availableColors.map(c => (
-                      <div key={c} onClick={() => { setSelectedColor(c); setIsColorOpen(false); }} className="p-3 hover:bg-zinc-100 cursor-pointer text-[10px] font-bold uppercase">{c}</div>
-                    ))}
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <input 
+                      type="text" 
+                      placeholder="ENTER CITY" 
+                      value={city}
+                      onChange={(e) => setCity(e.target.value.toUpperCase())}
+                      className="w-full p-5 pl-12 bg-gray-50 border-2 border-transparent focus:border-purple-600 rounded-2xl font-bold uppercase text-sm outline-none transition-all" 
+                    />
                   </div>
-                )}
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Delivery Address</p>
-                <div 
-                  onClick={() => setShowAddressForm(true)}
-                  className="w-full p-4 bg-zinc-50 border border-zinc-100 rounded-xl flex justify-between items-center cursor-pointer hover:bg-zinc-100 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-zinc-400" />
-                    <span className="text-[11px] font-black uppercase">{selectedLocation}</span>
+              {/* Urgent Delivery Toggle */}
+              <div 
+                onClick={() => setIsUrgent(!isUrgent)}
+                className={`p-6 rounded-[25px] border-2 transition-all cursor-pointer flex items-center justify-between ${isUrgent ? 'border-purple-600 bg-purple-50/50' : 'border-gray-100 bg-gray-50'}`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl ${isUrgent ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'}`}><Truck size={24} /></div>
+                  <div>
+                    <p className="font-black text-sm uppercase italic">Urgent Delivery</p>
+                    <p className="text-[10px] font-bold text-gray-400">+$5.00 SHIPPING FEE</p>
                   </div>
-                  <ChevronRight size={16} className="text-zinc-400" />
+                </div>
+                <div className={`w-14 h-8 rounded-full relative transition-colors ${isUrgent ? 'bg-purple-600' : 'bg-gray-300'}`}>
+                  <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all shadow-sm ${isUrgent ? 'left-7' : 'left-1'}`} />
                 </div>
               </div>
 
-              <div onClick={() => setIsUrgent(!isUrgent)} className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${isUrgent ? 'border-red-500 bg-red-50' : 'border-zinc-100 bg-zinc-50'}`}>
-                <div className="flex items-center gap-3">
-                  <Truck size={18} className={isUrgent ? 'text-red-600' : 'text-zinc-400'} />
-                  <span className="text-[10px] font-black uppercase">Urgent Delivery (+$5.00)</span>
-                </div>
-                <div className={`w-10 h-5 rounded-full relative transition-colors ${isUrgent ? 'bg-red-500' : 'bg-zinc-300'}`}>
-                  <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${isUrgent ? 'left-6' : 'left-1'}`} />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Amount</p>
-                <div className="flex items-center border border-zinc-100 rounded-xl overflow-hidden h-14">
-                  <button onClick={() => setAmount(Math.max(1, amount - 1))} className="w-20 bg-zinc-50 font-bold hover:bg-zinc-100 transition-colors">-</button>
-                  <div className="flex-1 text-center font-black text-sm">{amount}</div>
-                  <button onClick={() => amount < stockCount && setAmount(amount + 1)} className="w-20 bg-zinc-50 font-bold hover:bg-zinc-100 transition-colors">+</button>
-                </div>
-              </div>
-
-              <div className="p-8 bg-zinc-50 rounded-[30px] text-center">
-                <p className="text-[10px] font-black uppercase text-zinc-400 tracking-widest mb-1">Total Payment</p>
-                <span className="text-3xl font-black text-black">${totalPrice}</span>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 pt-2">
-                <Button className="w-full bg-[#FF0000] hover:bg-red-700 text-white py-8 rounded-[20px] font-black uppercase tracking-[0.2em] h-auto text-[11px]">Pay with Telebirr</Button>
-                <Button className="w-full bg-black hover:bg-zinc-800 text-white py-8 rounded-[20px] font-black uppercase tracking-[0.2em] h-auto text-[11px]">Pay with Chapa</Button>
+              {/* Amount */}
+              <div className="flex items-center justify-between bg-gray-900 p-2 rounded-2xl">
+                <button onClick={() => setAmount(Math.max(1, amount-1))} className="p-4 text-white hover:text-purple-400 transition-colors"><Minus size={20}/></button>
+                <span className="text-white font-black text-2xl">{amount}</span>
+                <button onClick={() => setAmount(amount+1)} className="p-4 text-white hover:text-purple-400 transition-colors"><Plus size={20}/></button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* SUB-MODAL: ADDRESS FORM */}
-      {showAddressForm && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/30 backdrop-blur-md p-4">
-          <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl flex flex-col max-h-[90vh] animate-in slide-in-from-bottom duration-300">
-            <div className="p-6 border-b flex items-center justify-between">
-              <button onClick={() => setShowAddressForm(false)}><ArrowLeft size={20}/></button>
-              <div className="text-center">
-                <h3 className="text-sm font-bold">Add New Address</h3>
-                <p className="text-[9px] text-green-600 font-medium">All information is encrypted</p>
+            {/* Payment Section */}
+            <div className="p-8 border-t bg-gray-50/80">
+              <div className="flex justify-between items-end mb-8">
+                <span className="text-[10px] font-black uppercase text-gray-400">Total Payment</span>
+                <span className="text-5xl font-black italic tracking-tighter text-gray-900">${totalPayment.toFixed(2)}</span>
               </div>
-              <HelpCircle size={20} className="text-zinc-300"/>
-            </div>
-            <div className="p-6 space-y-4 overflow-y-auto">
-                <input type="text" placeholder="Contact name*" className="w-full p-4 border rounded-xl bg-zinc-50 text-xs outline-none focus:border-black" />
-                <input type="text" placeholder="Mobile number*" className="w-full p-4 border rounded-xl bg-zinc-50 text-xs outline-none focus:border-black" />
-                <input type="text" placeholder="Street, house/apartment/unit*" className="w-full p-4 border rounded-xl bg-zinc-50 text-xs outline-none" />
-                
-                {/* COUNTRY POSITIONED ABOVE CITY */}
-                <select className="w-full p-4 border rounded-xl bg-zinc-50 text-xs outline-none focus:border-black appearance-none">
-                  <option value="">Select Country*</option>
-                  {countries.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-
-                <input type="text" placeholder="City*" className="w-full p-4 border rounded-xl bg-zinc-50 text-xs outline-none" />
-                
-                <Button 
-                    onClick={() => {setSelectedLocation("Adama, Ethiopia"); setShowAddressForm(false);}} 
-                    className="w-full bg-[#E31E24] hover:bg-red-700 text-white py-7 rounded-full font-bold uppercase text-[11px]"
-                >
-                    Save Address
-                </Button>
+              <div className="grid grid-cols-1 gap-4">
+                <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 rounded-3xl font-black uppercase italic tracking-tighter shadow-xl shadow-purple-100 transition-all active:scale-95">Pay with Telebirr</button>
+                <button className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black uppercase italic tracking-tighter transition-all active:scale-95">Pay with Chapa</button>
+              </div>
             </div>
           </div>
         </div>
