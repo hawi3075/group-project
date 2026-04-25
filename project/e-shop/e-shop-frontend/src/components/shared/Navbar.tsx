@@ -57,7 +57,7 @@ const Navbar = () => {
           <Link to="/about" className="text-[10px] font-bold uppercase tracking-widest hover:text-zinc-500">
             About
           </Link>
-          <Link to="/admin" className="text-[10px] font-bold uppercase tracking-widest hover:text-zinc-500"> admin</Link>
+          
         </div>
 
         <div className="flex items-center gap-5">
