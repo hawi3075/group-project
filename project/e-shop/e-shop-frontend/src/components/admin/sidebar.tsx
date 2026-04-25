@@ -1,12 +1,5 @@
 import { LayoutGrid, Package, ShoppingCart, Users, BarChart3, User, ChevronLeft, type LucideIcon } from "lucide-react"
 
-// ✅ Simple User type for sidebar display
-type SidebarUser = {
-  displayName: string
-  roleLabel: string
-  initials: string
-}
-
 // Define the type for navigation items
 type NavItem = {
   id: string
@@ -26,31 +19,10 @@ const navItems: NavItem[] = [
 type SidebarProps = {
   activeItem: string
   onItemClick: (itemId: string) => void
-  onBack?: () => void
-  user?: SidebarUser | null  // ✅ Optional dynamic user data
+  onBack?: () => void  // ✅ Optional back handler
 }
 
-// ✅ Helper to generate initials from name or email
-const getInitials = (name?: string, email?: string): string => {
-  if (name && name.trim()) {
-    const parts = name.trim().split(" ")
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase()
-    }
-    return name[0].toUpperCase()
-  }
-  if (email) {
-    return email.substring(0, 2).toUpperCase()
-  }
-  return "SB" // Default fallback
-}
-
-export function Sidebar({ activeItem, onItemClick, onBack, user }: SidebarProps) {
-  // ✅ Use provided user data OR fallback to defaults
-  const displayName = user?.displayName || "SIHAM BIRHANU"
-  const roleLabel = user?.roleLabel || "SYSTEM ADMIN"
-  const initials = user?.initials || getInitials("Siham Birhanu")
-
+export function Sidebar({ activeItem, onItemClick, onBack }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-white text-zinc-900 border-r border-zinc-200">
       {/* Header with Back Button + Logo */}
@@ -96,7 +68,7 @@ export function Sidebar({ activeItem, onItemClick, onBack, user }: SidebarProps)
         ))}
       </nav>
 
-      {/* Profile Section - Dynamic with fallback */}
+      {/* Profile Section */}
       <div className="border-t border-zinc-200 p-4">
         <button
           onClick={() => onItemClick("profile")}
@@ -110,16 +82,12 @@ export function Sidebar({ activeItem, onItemClick, onBack, user }: SidebarProps)
           
           <div className="h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-pink-400 to-purple-500">
             <div className="flex h-full w-full items-center justify-center text-sm font-bold text-white">
-              {initials}
+              SB
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-zinc-900 truncate">
-              {displayName}
-            </p>
-            <p className="text-xs text-zinc-500 truncate">
-              {roleLabel}
-            </p>
+            <p className="text-sm font-medium text-zinc-900 truncate">SIHAM BIRHANU</p>
+            <p className="text-xs text-zinc-500 truncate">SYSTEM ADMIN</p>
           </div>
         </button>
       </div>
