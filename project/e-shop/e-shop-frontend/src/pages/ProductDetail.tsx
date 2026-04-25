@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   ChevronLeft, Minus, Plus, Package, Truck, 
-  MapPin, ChevronDown, X, Globe 
+  MapPin, ChevronDown, X, Globe, CheckCircle2,
+  ShoppingCart // Added for the new button icon
 } from "lucide-react";
 
 // --- IMPORT SHARED DATA ---
 import { PRODUCTS } from '@/lib/mock-data';
 
-// Updated Interface to match your usage and clear errors
+// Interface to clear TypeScript errors
 interface Product {
   _id?: string;
   id?: string | number;
@@ -22,11 +23,16 @@ interface Product {
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
+  
+  // UI States
   const [amount, setAmount] = useState(1);
   const [selectedSize, setSelectedSize] = useState("Medium");
   const [selectedColor, setSelectedColor] = useState("Original");
   const [isUrgent, setIsUrgent] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false); // Success state
+  
+  // Dropdown States
   const [isSizeOpen, setIsSizeOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
   const [mainImage, setMainImage] = useState("");
@@ -35,14 +41,13 @@ const ProductDetail = () => {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
 
-  // Use 'as any' on the find operation to bypass the strict property checks
+  // Product Lookup
   const product = (PRODUCTS as any[]).find((p) => String(p._id || p.id) === String(id)) as Product;
 
   useEffect(() => {
     if (product) setMainImage(product.image);
   }, [product]);
 
-  // If no product matches the ID in the URL
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-4">
@@ -54,9 +59,13 @@ const ProductDetail = () => {
     );
   }
 
-  // Formatting price (removes '$' if present to allow math)
   const unitPrice = parseFloat(String(product.price).replace(/[^0-9.]/g, '')) || 0;
   const totalPayment = (unitPrice * amount) + (isUrgent ? 5 : 0);
+
+  const handlePayment = () => {
+    // Simulating payment processing
+    setIsSuccess(true);
+  };
 
   return (
     <div className="min-h-screen bg-white pb-20 font-sans">
@@ -68,7 +77,7 @@ const ProductDetail = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16">
-        {/* Left: Visuals */}
+        {/* Left: Product Image */}
         <div className="relative group">
           <div className="aspect-[4/5] bg-[#f9f9f9] rounded-[60px] overflow-hidden border border-gray-100 shadow-sm">
             <img 
@@ -79,7 +88,7 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Right: Detailed Info */}
+        {/* Right: Info */}
         <div className="flex flex-col pt-10">
           <span className="text-purple-600 font-black text-xs uppercase tracking-[0.2em] mb-4">
             {product.category}
@@ -102,12 +111,23 @@ const ProductDetail = () => {
             </p>
           </div>
 
-          <button 
-            onClick={() => setIsCheckoutOpen(true)}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-8 rounded-[30px] transition-all transform active:scale-95 uppercase italic text-2xl shadow-2xl shadow-purple-200"
-          >
-            Buy Now
-          </button>
+          {/* Button Group: Add to Cart & Buy Now */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+            <button 
+              onClick={() => alert('Added to Cart!')}
+              className="flex-1 bg-white border-4 border-black text-black hover:bg-black hover:text-white font-black py-6 rounded-[30px] transition-all transform active:scale-95 uppercase italic text-xl flex items-center justify-center gap-3"
+            >
+              <ShoppingCart size={24} />
+              Add to Cart
+            </button>
+
+            <button 
+              onClick={() => setIsCheckoutOpen(true)}
+              className="flex-[1.5] bg-purple-600 hover:bg-purple-700 text-white font-black py-6 rounded-[30px] transition-all transform active:scale-95 uppercase italic text-xl shadow-2xl shadow-purple-200"
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
       </div>
 
@@ -123,7 +143,6 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto p-8 space-y-10">
-              {/* Selections */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
                   <label className="text-[10px] font-black uppercase text-gray-400 mb-2 block">Size</label>
@@ -154,7 +173,6 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Address Form */}
               <div className="space-y-4">
                 <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Delivery Address</h3>
                 <div className="space-y-3">
@@ -181,7 +199,6 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Urgent Delivery Toggle */}
               <div 
                 onClick={() => setIsUrgent(!isUrgent)}
                 className={`p-6 rounded-[25px] border-2 transition-all cursor-pointer flex items-center justify-between ${isUrgent ? 'border-purple-600 bg-purple-50/50' : 'border-gray-100 bg-gray-50'}`}
@@ -198,7 +215,6 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Amount */}
               <div className="flex items-center justify-between bg-gray-900 p-2 rounded-2xl">
                 <button onClick={() => setAmount(Math.max(1, amount-1))} className="p-4 text-white hover:text-purple-400 transition-colors"><Minus size={20}/></button>
                 <span className="text-white font-black text-2xl">{amount}</span>
@@ -213,10 +229,35 @@ const ProductDetail = () => {
                 <span className="text-5xl font-black italic tracking-tighter text-gray-900">${totalPayment.toFixed(2)}</span>
               </div>
               <div className="grid grid-cols-1 gap-4">
-                <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 rounded-3xl font-black uppercase italic tracking-tighter shadow-xl shadow-purple-100 transition-all active:scale-95">Pay with Telebirr</button>
-                <button className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black uppercase italic tracking-tighter transition-all active:scale-95">Pay with Chapa</button>
+                <button onClick={handlePayment} className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 rounded-3xl font-black uppercase italic tracking-tighter shadow-xl shadow-purple-100 transition-all active:scale-95">Pay with Telebirr</button>
+                <button onClick={handlePayment} className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black uppercase italic tracking-tighter transition-all active:scale-95">Pay with Chapa</button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUCCESS OVERLAY */}
+      {isSuccess && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6">
+          <div className="absolute inset-0 bg-purple-600/90 backdrop-blur-xl animate-in fade-in duration-500" />
+          <div className="relative bg-white p-12 rounded-[50px] text-center space-y-6 max-w-sm w-full shadow-2xl animate-in zoom-in duration-300">
+            <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto text-white shadow-lg shadow-emerald-200">
+              <CheckCircle2 size={48} />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-3xl font-black uppercase italic tracking-tighter">Payment Success!</h2>
+              <p className="text-zinc-500 text-sm font-medium">Thank you for shopping at Efoy Gebya. Your order is being processed.</p>
+            </div>
+            <button 
+              onClick={() => {
+                setIsSuccess(false);
+                setIsCheckoutOpen(false);
+              }}
+              className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[10px]"
+            >
+              Back to Store
+            </button>
           </div>
         </div>
       )}
