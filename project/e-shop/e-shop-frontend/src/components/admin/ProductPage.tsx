@@ -86,7 +86,7 @@ export function ProductsPage() {
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
           <div>
-            <h1 className="text-4xl font-black tracking-tight text-zinc-100">
+            <h1 className="text-4xl font-black tracking-tight text-zinc-900">
               PRODUCT CATALOGUE
             </h1>
             <p className="mt-1 text-xs tracking-widest text-zinc-400">
