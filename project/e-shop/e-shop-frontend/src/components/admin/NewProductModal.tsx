@@ -1,7 +1,6 @@
 import { useState, useRef } from "react"
 import { X, Upload } from "lucide-react"
 
-// Define the available sizes
 const AVAILABLE_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"] as const
 type Size = typeof AVAILABLE_SIZES[number]
 
