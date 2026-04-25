@@ -1,29 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { EyeOff, Eye, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import API from '../api/axios'; 
 
 const Login = () => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
-  // SAFETY CHECK: Fixes the "undefined" JSON error seen in your console
-  useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr && userStr !== "undefined") {
-      try {
-        const user = JSON.parse(userStr);
-        // Redirect if already logged in
-        navigate(user.role === 'admin' ? '/admin/overview' : '/products');
-      } catch (e) {
-        localStorage.removeItem('user'); // Clear bad data
-      }
-    }
-  }, [navigate]);
+  // ✅ REMOVED the auto-redirect useEffect that was causing the issue!
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,9 +37,9 @@ const Login = () => {
         // Success feedback
         alert("Login Successful!");
         
-        // Redirecting to your existing products page
+        // ✅ FIXED: Use /admin instead of /admin/overview to match your App.tsx routes
         if (authData.role === 'admin') {
-          navigate('/admin/overview');
+          navigate('/admin');
         } else {
           navigate('/products'); 
         }
@@ -96,7 +84,7 @@ const Login = () => {
               type="email" 
               required 
               value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} 
               className="w-full bg-[#E8F0FE] border-none h-12 px-4 rounded-xl text-sm font-medium text-black" 
             />
           </div>
@@ -108,7 +96,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"} 
                 required 
                 value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} 
                 className="w-full bg-[#E8F0FE] border-none h-12 px-4 rounded-xl text-sm font-medium pr-10 text-black" 
               />
               <button 

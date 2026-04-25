@@ -9,7 +9,6 @@ interface SidebarProps {
 const ProductSidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(true);
 
-  // Updated categories list: Furniture removed, Fashion/Accessories added
   const categories = [
     { name: 'All Products' },
     { name: 'Clothing', hasSub: true },

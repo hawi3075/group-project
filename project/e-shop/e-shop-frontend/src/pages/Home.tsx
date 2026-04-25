@@ -14,7 +14,7 @@ const Home = () => {
   const displayCategories = CATEGORIES
     .filter(cat => {
       const name = cat.name.toLowerCase();
-      // Remove unwanted categories
+    
       return name !== 'toys' && name !== 'video games';
     })
     .map(cat => {
