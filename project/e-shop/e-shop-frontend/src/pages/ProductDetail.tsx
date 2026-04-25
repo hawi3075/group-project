@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   ChevronLeft, Minus, Plus, Package, Truck, 
-  MapPin, ChevronDown, X, Globe, CheckCircle2 
+  MapPin, ChevronDown, X, Globe, CheckCircle2,
+  ShoppingCart // Added for the new button icon
 } from "lucide-react";
 
 // --- IMPORT SHARED DATA ---
@@ -110,12 +111,23 @@ const ProductDetail = () => {
             </p>
           </div>
 
-          <button 
-            onClick={() => setIsCheckoutOpen(true)}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-8 rounded-[30px] transition-all transform active:scale-95 uppercase italic text-2xl shadow-2xl shadow-purple-200"
-          >
-            Buy Now
-          </button>
+          {/* Button Group: Add to Cart & Buy Now */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+            <button 
+              onClick={() => alert('Added to Cart!')}
+              className="flex-1 bg-white border-4 border-black text-black hover:bg-black hover:text-white font-black py-6 rounded-[30px] transition-all transform active:scale-95 uppercase italic text-xl flex items-center justify-center gap-3"
+            >
+              <ShoppingCart size={24} />
+              Add to Cart
+            </button>
+
+            <button 
+              onClick={() => setIsCheckoutOpen(true)}
+              className="flex-[1.5] bg-purple-600 hover:bg-purple-700 text-white font-black py-6 rounded-[30px] transition-all transform active:scale-95 uppercase italic text-xl shadow-2xl shadow-purple-200"
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
       </div>
 
