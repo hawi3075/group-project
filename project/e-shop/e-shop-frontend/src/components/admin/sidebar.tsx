@@ -1,15 +1,5 @@
 import { LayoutGrid, Package, ShoppingCart, Users, BarChart3, User, ChevronLeft, type LucideIcon } from "lucide-react"
 
-// ✅ Add User type
-type AdminUser = {
-  id: string
-  email: string
-  firstName?: string
-  lastName?: string
-  role: string
-  profilePicture?: string
-}
-
 // Define the type for navigation items
 type NavItem = {
   id: string
@@ -25,37 +15,14 @@ const navItems: NavItem[] = [
   { id: "analytics", label: "ANALYTICS", icon: BarChart3 },
 ]
 
-// ✅ Update SidebarProps to include user data
+// Define the props for the Sidebar component
 type SidebarProps = {
   activeItem: string
   onItemClick: (itemId: string) => void
-  onBack?: () => void
-  currentUser?: AdminUser | null  // ✅ Dynamic user data
+  onBack?: () => void  // ✅ Optional back handler
 }
 
-// ✅ Helper to get initials
-const getInitials = (firstName?: string, lastName?: string, email?: string): string => {
-  if (firstName && lastName) {
-    return `${firstName[0]}${lastName[0]}`.toUpperCase()
-  }
-  if (email) {
-    return email.substring(0, 2).toUpperCase()
-  }
-  return "AD"
-}
-
-export function Sidebar({ activeItem, onItemClick, onBack, currentUser }: SidebarProps) {
-  // ✅ Get display name
-  const displayName = currentUser?.firstName && currentUser?.lastName
-    ? `${currentUser.firstName} ${currentUser.lastName}`.toUpperCase()
-    : currentUser?.email?.split('@')[0].toUpperCase() || "SYSTEM ADMIN"
-
-  // ✅ Get role label
-  const roleLabel = currentUser?.role?.toUpperCase() || "ADMIN"
-
-  // ✅ Get initials
-  const initials = getInitials(currentUser?.firstName, currentUser?.lastName, currentUser?.email)
-
+export function Sidebar({ activeItem, onItemClick, onBack }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-white text-zinc-900 border-r border-zinc-200">
       {/* Header with Back Button + Logo */}
@@ -101,7 +68,7 @@ export function Sidebar({ activeItem, onItemClick, onBack, currentUser }: Sideba
         ))}
       </nav>
 
-      {/* ✅ Dynamic Profile Section */}
+      {/* Profile Section */}
       <div className="border-t border-zinc-200 p-4">
         <button
           onClick={() => onItemClick("profile")}
@@ -113,21 +80,14 @@ export function Sidebar({ activeItem, onItemClick, onBack, currentUser }: Sideba
         >
           <User className="h-5 w-5" />
           
-          {/* ✅ Dynamic Avatar with Initials */}
           <div className="h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-pink-400 to-purple-500">
             <div className="flex h-full w-full items-center justify-center text-sm font-bold text-white">
-              {initials}
+              SB
             </div>
           </div>
-          
-          {/* ✅ Dynamic Name and Role */}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-zinc-900 truncate">
-              {displayName}
-            </p>
-            <p className="text-xs text-zinc-500 truncate">
-              {roleLabel}
-            </p>
+            <p className="text-sm font-medium text-zinc-900 truncate">SIHAM BIRHANU</p>
+            <p className="text-xs text-zinc-500 truncate">SYSTEM ADMIN</p>
           </div>
         </button>
       </div>
