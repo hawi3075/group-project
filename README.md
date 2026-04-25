@@ -64,13 +64,3 @@ Resolved initial CORS and connectivity issues between Vercel and Render.
 
 Implemented a fully responsive Home page, Cart system, and Product Details with dynamic loading.
 
-Git Commands to Push:
-Bash
-# 1. Add the README file
-git add README.md
-
-# 2. Commit the final completed status
-git commit -m "docs: complete README with live links and final project status"
-
-# 3. Push to your branch
-git push origin my-home
