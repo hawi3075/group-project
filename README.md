@@ -1,63 +1,84 @@
-🛍️ Efoy Gebya - E-Commerce Frontend
-Welcome to the frontend repository for Efoy Gebya. This is a high-fidelity, luxury-focused web application built with a modern tech stack to deliver a cinematic shopping experience. It features a "luxury" aesthetic characterized by glassmorphism, mesh gradients, and real-world commercial photography.
+<h1>🛍️ Efoy Gebya - E-Commerce Frontend</h1>
 
-🔗 Live Links
-Frontend (Vercel): https://ecommerce-frontend-woad-theta.vercel.app/
+<p>Welcome to the frontend repository for <strong>Efoy Gebya</strong>. This is a high-fidelity, luxury-focused web application built with a modern tech stack to deliver a cinematic shopping experience. It features a "luxury" aesthetic characterized by glassmorphism, mesh gradients, and real-world commercial photography.</p>
 
-🛠️ Tech Stack
-Framework: React 18 (Vite)
+<br />
 
-Styling: Tailwind CSS (Utility-first styling for speed and consistency)
+<h2>🔗 Live Links</h2>
 
-UI Components: Shadcn UI (Built on Radix UI for accessibility and feel)
+<ul>
+  <li><strong>Frontend (Vercel):</strong> <a href="https://ecommerce-frontend-woad-theta.vercel.app/">https://ecommerce-frontend-woad-theta.vercel.app/</a></li>
+</ul>
 
-Icons: Lucide React
+<hr />
 
-State Management: React Context API & Axios for data fetching
+<h2>🛠️ Tech Stack</h2>
 
-Routing: React Router v6
+<ul>
+  <li><strong>Framework:</strong> React 18 (Vite)</li>
+  <li><strong>Styling:</strong> Tailwind CSS (Utility-first styling for speed and consistency)</li>
+  <li><strong>UI Components:</strong> Shadcn UI (Built on Radix UI for accessibility and feel)</li>
+  <li><strong>Icons:</strong> Lucide React</li>
+  <li><strong>State Management:</strong> React Context API & Axios for data fetching</li>
+  <li><strong>Routing:</strong> React Router v6</li>
+</ul>
 
-✨ Key Features
-Luxury Aesthetic: Custom-designed UI utilizing commercial photography and typography rather than AI-generated illustrations.
+<hr />
 
-Dynamic Data Fetching: Fully integrated with a Render-hosted backend using environment-aware API routing.
+<h2>✨ Key Features</h2>
 
-Responsive Design: Cinematic experience across 4K desktops, tablets, and mobile devices.
+<ul>
+  <li><strong>Luxury Aesthetic:</strong> Custom-designed UI utilizing commercial photography and typography rather than AI-generated illustrations.</li>
+  <li><strong>Dynamic Data Fetching:</strong> Fully integrated with a Render-hosted backend using environment-aware API routing.</li>
+  <li><strong>Responsive Design:</strong> Cinematic experience across 4K desktops, tablets, and mobile devices.</li>
+  <li><strong>Secure Authentication:</strong> Dedicated login and signup portals with real-time validation.</li>
+  <li><strong>Performance Optimized:</strong> Lightning-fast HMR and optimized builds via Vite.</li>
+</ul>
 
-Secure Authentication: Dedicated login and signup portals with real-time validation.
+<hr />
 
-Performance Optimized: Lightning-fast HMR and optimized builds via Vite.
+<h2>🚀 Quick Start (Local Development)</h2>
 
-🚀 Quick Start (Local Development)
-1. Installation
-Clone the repository and install dependencies:
+<h3>1. Installation</h3>
+<p>Clone the repository and install dependencies:</p>
 
-Bash
+<pre>
 git clone https://github.com/hawi3075/efoy-gebya-frontend.git
 cd efoy-gebya-frontend
 npm install
-2. Environment Configuration
-Create a .env file in the root directory:
+</pre>
 
-Code snippet
+<h3>2. Environment Configuration</h3>
+<p>Create a .env file in the root directory:</p>
+
+<pre>
 VITE_API_URL=https://ecommerce-backend-1-87dk.onrender.com
-3. Run Development Server
-Bash
+</pre>
+
+<h3>3. Run Development Server</h3>
+<pre>
 npm run dev
-☁️ Deployment (Vercel)
-This application is optimized for Vercel.
+</pre>
 
-Environment Variables: Ensure VITE_API_URL is set in the Vercel Dashboard.
+<hr />
 
-SPA Routing: A vercel.json file is included to ensure client-side routing works on refresh.
+<h2>☁️ Deployment (Vercel)</h2>
+<p>This application is optimized for Vercel.</p>
 
-Build Command: npm run build.
+<ul>
+  <li><strong>Environment Variables:</strong> Ensure VITE_API_URL is set in the Vercel Dashboard.</li>
+  <li><strong>SPA Routing:</strong> A vercel.json file is included to ensure client-side routing works on refresh.</li>
+  <li><strong>Build Command:</strong> npm run build.</li>
+</ul>
 
-📸 Project Status
-The full project is now COMPLETED.
+<hr />
 
-✅ Migrated from hardcoded localhost to dynamic Environment Variables.
+<h2>📸 Project Status</h2>
+<p><strong>The full project is now COMPLETED.</strong></p>
 
-✅ Resolved initial CORS and connectivity issues between Vercel and Render.
+<ul>
+  <li>✅ Migrated from hardcoded localhost to dynamic Environment Variables.</li>
+  <li>✅ Resolved initial CORS and connectivity issues between Vercel and Render.</li>
+</ul>
 
-Built with ❤️ for Efoy Gebya
+<p><strong>Built with ❤️ for Efoy Gebya</strong></p>
