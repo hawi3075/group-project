@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Search, Globe } from 'lucide-react';
+import { ShoppingCart, Search, Globe, User } from 'lucide-react';
 
 const Navbar = () => {
+  // Instead of useAuth, we check if a token exists in local storage
+  const isAuthenticated = localStorage.getItem('token'); 
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-100 bg-white/80 backdrop-blur-md">
       <div className="container mx-auto flex h-14 items-center justify-between px-6">
@@ -22,11 +25,24 @@ const Navbar = () => {
           <button className="flex items-center gap-1 text-[10px] font-bold uppercase">
             <Search className="h-4 w-4" /> <span className="hidden sm:inline">Search</span>
           </button>
+          
           <button className="flex items-center gap-1 text-[10px] font-bold uppercase">
             <Globe className="h-4 w-4" /> <span>EN</span>
           </button>
-          <Link to="/login" className="text-[10px] font-bold uppercase hover:underline">Log In</Link>
-          <Link to="/register" className="text-[10px] font-bold uppercase hover:underline">Sign Up</Link>
+
+          {/* CHECK AUTHENTICATION */}
+          {isAuthenticated ? (
+            <Link to="/profile" className="flex items-center gap-1">
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline text-[10px] font-bold uppercase">Profile</span>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="text-[10px] font-bold uppercase hover:underline">Log In</Link>
+              <Link to="/register" className="text-[10px] font-bold uppercase hover:underline">Sign Up</Link>
+            </>
+          )}
+
           <Link to="/cart">
             <ShoppingCart className="h-4 w-4" />
           </Link>
